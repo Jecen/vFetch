@@ -3,13 +3,13 @@
 ## 安装
 
 ```bash
-npm install vfetch
+npm install venus-fetch
 ```
 
 ## 使用
 
 ```javascript
-import VFetch from 'vfetch'
+import VFetch from 'venus-fetch'
 
 const http = VFetch(opt)
 ```
