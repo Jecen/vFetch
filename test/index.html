@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../src/vFetch.js"></script>
+</head>
+<body>
+  <script>
+    console.log(window, VFetch.HttpError, VFetch.HTTP_ERROR_MAP, VFetch.httpConfig)
+    const http = VFetch(VFetch.httpConfig)
+
+    http.injectAfter(function(rst){
+      console.log('injectAfter', rst)
+      return new tFetch.HttpError({
+        code: '001',
+        message: 'error test',
+        httpStatus: null,
+      })
+    })
+    http.injectAfter(function(){
+      console.log(222);
+    })
+    http.setErrorHook(function(e){
+      console.log(e, 'error');
+    })
+
+    http.post('t.json', {a:2, c:3})
+      .then(rst => {
+        //console.log(rst, 'success');
+      }).catch(e => {
+        //console.log(e, 'error');
+      })
+  </script> 
+</body>
+</html>
