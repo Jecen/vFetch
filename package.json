@@ -11,13 +11,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@gitlab.hztianque.com:22016/cell/tFetch.git"
+    "url": "ssh://git@github.com/Jecen/vFetch.git"
   },
   "keywords": [
     "fetch",
     "ajax"
   ],
-  "author": "inlost",
+  "author": "Jacen",
   "license": "ISC",
   "dependencies": {
     "babel-cli": "^6.26.0",
