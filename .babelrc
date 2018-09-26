@@ -1,6 +1,6 @@
 {
   "presets": [
-    "es2015",
+    "env",
     "stage-2"
   ],
   "plugins": ["transform-es2015-modules-umd"],
