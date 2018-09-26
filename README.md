@@ -76,8 +76,7 @@ const httpConfig = {
 ### 例子
 
 ```javascript
-http.injectAfter(async function(response){
-  const rsp = await response.json()
+http.injectAfter(function(rsp){
   // do some response check
 
   return new vFetch.HttpError({
