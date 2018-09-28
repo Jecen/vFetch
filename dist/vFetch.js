@@ -189,7 +189,8 @@
         }
         var queryList = [];
         var formData = new FormData();
-        Object.entries(query).forEach(function (q) {
+        var entries = Object.entries(query);
+        entries.length && entries.forEach(function (q) {
           var _q = _slicedToArray(q, 2),
               key = _q[0],
               val = _q[1];
@@ -241,8 +242,8 @@
       }
     }, {
       key: '_checkResponse',
-      value: function _checkResponse() {
-        return true;
+      value: function _checkResponse(rst, reject) {
+        return rst;
       }
     }, {
       key: '_initUrl',
@@ -295,10 +296,7 @@
 
         return new Promise(function (resolve, reject) {
           return http(finalUrl, finalOpt).then(function (rsp) {
-            if (_this2._checkResponse(rsp, reject)) {
-              return type === "download" ? rsp.blob() : rsp.json();
-            }
-            return {};
+            return _this2._checkResponse(type === 'download' ? rsp.blob() : rsp.json(), reject);
           }).catch(function () {
             var error = new HttpError({
               message: '请求失败，请检查网络情况，并联系管理员。',
@@ -308,8 +306,8 @@
             reject(error);
             overHandler(error);
           }).then(function (rsp) {
-            var rst = type === "download" ? { code: 606, data: rsp, success: true, msg: '操作成功' } : rsp;
-            _this2.afterHooks.forEach(function (hook) {
+            var rst = type === 'download' ? { code: 606, data: rsp, success: true, msg: '操作成功' } : rsp;
+            _this2.afterHooks.length > 0 && _this2.afterHooks.forEach(function (hook) {
               if (!getOverStatus()) {
                 var hookRst = hook(rst);
                 if (hookRst instanceof HttpError) {
@@ -355,7 +353,7 @@
 
         var isOver = false;
         var overHandler = function overHandler(error) {
-          !isOver && _this3.errorHook(error, fetchUrl);
+          !isOver && _this3.errorHook && _this3.errorHook(error, fetchUrl);
           isOver = true;
         };
         var apiPromise = this._getApiPromise(http, finalUrl, finalOpt, overHandler, function () {
@@ -369,7 +367,6 @@
     }, {
       key: 'injectAfter',
       value: function injectAfter(after) {
-        console.log(this);
         after && this.afterHooks.push(after);
       }
     }, {

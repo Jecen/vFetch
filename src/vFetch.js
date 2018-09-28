@@ -53,7 +53,8 @@ class HttpShell {
     }
     const queryList = []
     const formData = new FormData()
-    Object.entries(query).forEach((q) => {
+    const entries = Object.entries(query)
+    entries.length && entries.forEach((q) => {
       const [key, val] = q
       if (val.length !== 0 && val) {
         queryList.push(`${key}=${encodeURIComponent(val)}`)
@@ -72,8 +73,8 @@ class HttpShell {
     }
     const headers = Object.assign({}, this.config.headers, opt.headers)
     if (type === 'upload') { // 请求为上传文件时 Content-Type = undefined 让游览器根据参数类型自行判断类型
-      headers['Content-Type'] = undefined
-    } 
+      headers['Content-Type'] = undefined // eslint-disable-line
+    }
     finalOpt.headers = headers
     if (Object.prototype.toString.call(params) === '[object FormData]') {
       finalOpt.body = params
@@ -100,8 +101,8 @@ class HttpShell {
     return Object.assign({}, this.config, finalOpt)
   }
 
-  _checkResponse() {
-    return true
+  _checkResponse(rst, reject) { // eslint-disable-line
+    return rst
   }
 
   _initUrl(url, method, opt, params) {
@@ -149,12 +150,7 @@ class HttpShell {
     const { type } = finalOpt
     return new Promise((resolve, reject) =>
       http(finalUrl, finalOpt)
-        .then((rsp) => {
-          if (this._checkResponse(rsp, reject)) {
-            return type === "download" ? rsp.blob() : rsp.json()
-          }
-          return {}
-        })
+        .then((rsp) => this._checkResponse(type === 'download' ? rsp.blob() : rsp.json(), reject))
         .catch(() => {
           const error = new HttpError({
             message: '请求失败，请检查网络情况，并联系管理员。',
@@ -165,8 +161,8 @@ class HttpShell {
           overHandler(error)
         })
         .then((rsp) => {
-          const rst = type === "download"  ? { code: 606, data: rsp, success: true, msg: '操作成功' } : rsp
-          this.afterHooks.forEach(hook => {
+          const rst = type === 'download' ? { code: 606, data: rsp, success: true, msg: '操作成功' } : rsp
+          this.afterHooks.length > 0 && this.afterHooks.forEach(hook => {
             if (!getOverStatus()) {
               const hookRst = hook(rst)
               if (hookRst instanceof HttpError) {
@@ -196,7 +192,7 @@ class HttpShell {
     }, [fetchUrl, fetchOpt])
     let isOver = false
     const overHandler = (error) => {
-      !isOver && this.errorHook(error, fetchUrl)
+      !isOver && this.errorHook && this.errorHook(error, fetchUrl)
       isOver = true
     }
     const apiPromise = this._getApiPromise(http, finalUrl, finalOpt, overHandler, () => isOver, () => { isOver = true })
@@ -205,7 +201,6 @@ class HttpShell {
   }
 
   injectAfter(after) {
-    console.log(this)
     after && this.afterHooks.push(after)
   }
 

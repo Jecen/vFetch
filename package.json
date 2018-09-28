@@ -1,6 +1,6 @@
 {
   "name": "venus-fetch",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "esay to use fetch lib",
   "main": "dist/vFetch.min.js",
   "scripts": {
