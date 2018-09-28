@@ -54,7 +54,7 @@ class HttpShell {
     const queryList = []
     const formData = new FormData()
     const entries = Object.entries(query)
-    entries.length && entries.forEach((q) => {
+    entries.length > 0 && entries.forEach((q) => {
       const [key, val] = q
       if (val.length !== 0 && val) {
         queryList.push(`${key}=${encodeURIComponent(val)}`)
@@ -236,14 +236,14 @@ class HttpShell {
 }
 
 function VFetch(option, http = fetch) {
-  const { allow } = option
+  const { allow = ['get', 'post', 'put', 'delete', 'option'] } = option
   const clientWrapper = new HttpShell(option)
   const client = {
     injectAfter: clientWrapper.injectAfter.bind(clientWrapper),
     injectBefore: clientWrapper.injectBefore.bind(clientWrapper),
     setErrorHook: clientWrapper.setError.bind(clientWrapper),
   }
-  const allowMethod = allow || ['get', 'post', 'put', 'delete', 'option']
+  const allowMethod = allow 
 
   allowMethod.forEach(m => {
     client[m] = async (url, params, opt) => clientWrapper[m](http, url, params, opt)

@@ -1,6 +1,6 @@
 {
   "name": "venus-fetch",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "esay to use fetch lib",
   "main": "dist/vFetch.min.js",
   "scripts": {
@@ -23,6 +23,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-2": "^6.24.1",
-    "uglify-js": "^3.4.9"
+    "uglify-js": "^3.4.9",
+    "babel-plugin-transform-runtime": "^6.23.0"
   }
 }

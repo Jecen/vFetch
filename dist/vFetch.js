@@ -1,132 +1,40 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports'], factory);
+    define(['module', 'exports', 'babel-runtime/helpers/typeof', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/helpers/extends', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/helpers/createClass', 'babel-runtime/helpers/classCallCheck'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports);
+    factory(module, exports, require('babel-runtime/helpers/typeof'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/helpers/extends'), require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/helpers/createClass'), require('babel-runtime/helpers/classCallCheck'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports);
+    factory(mod, mod.exports, global._typeof, global.regenerator, global.asyncToGenerator, global._extends, global.slicedToArray, global.createClass, global.classCallCheck);
     global.vFetch = mod.exports;
   }
-})(this, function (module, exports) {
+})(this, function (module, exports, _typeof2, _regenerator, _asyncToGenerator2, _extends2, _slicedToArray2, _createClass2, _classCallCheck2) {
   'use strict';
 
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  };
+  var _typeof3 = _interopRequireDefault(_typeof2);
 
-  function _asyncToGenerator(fn) {
-    return function () {
-      var gen = fn.apply(this, arguments);
-      return new Promise(function (resolve, reject) {
-        function step(key, arg) {
-          try {
-            var info = gen[key](arg);
-            var value = info.value;
-          } catch (error) {
-            reject(error);
-            return;
-          }
+  var _regenerator2 = _interopRequireDefault(_regenerator);
 
-          if (info.done) {
-            resolve(value);
-          } else {
-            return Promise.resolve(value).then(function (value) {
-              step("next", value);
-            }, function (err) {
-              step("throw", err);
-            });
-          }
-        }
+  var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-        return step("next");
-      });
+  var _extends3 = _interopRequireDefault(_extends2);
+
+  var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+  var _createClass3 = _interopRequireDefault(_createClass2);
+
+  var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+  function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : {
+      default: obj
     };
-  }
-
-  var _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-
-  var _slicedToArray = function () {
-    function sliceIterator(arr, i) {
-      var _arr = [];
-      var _n = true;
-      var _d = false;
-      var _e = undefined;
-
-      try {
-        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-          _arr.push(_s.value);
-
-          if (i && _arr.length === i) break;
-        }
-      } catch (err) {
-        _d = true;
-        _e = err;
-      } finally {
-        try {
-          if (!_n && _i["return"]) _i["return"]();
-        } finally {
-          if (_d) throw _e;
-        }
-      }
-
-      return _arr;
-    }
-
-    return function (arr, i) {
-      if (Array.isArray(arr)) {
-        return arr;
-      } else if (Symbol.iterator in Object(arr)) {
-        return sliceIterator(arr, i);
-      } else {
-        throw new TypeError("Invalid attempt to destructure non-iterable instance");
-      }
-    };
-  }();
-
-  var _createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
   }
 
   var HttpError = function HttpError(errorInfo) {
-    _classCallCheck(this, HttpError);
-
+    (0, _classCallCheck3.default)(this, HttpError);
     var message = errorInfo.message,
         code = errorInfo.code,
         _errorInfo$httpStatus = errorInfo.httpStatus,
@@ -156,8 +64,7 @@
 
   var HttpShell = function () {
     function HttpShell(option) {
-      _classCallCheck(this, HttpShell);
-
+      (0, _classCallCheck3.default)(this, HttpShell);
       var _option$conf = option.conf,
           config = _option$conf === undefined ? {
         baseUrl: '',
@@ -179,7 +86,7 @@
       this.timeout = timeout;
     }
 
-    _createClass(HttpShell, [{
+    (0, _createClass3.default)(HttpShell, [{
       key: '_getQueryData',
       value: function _getQueryData(query) {
         var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'string';
@@ -190,8 +97,8 @@
         var queryList = [];
         var formData = new FormData();
         var entries = Object.entries(query);
-        entries.length && entries.forEach(function (q) {
-          var _q = _slicedToArray(q, 2),
+        entries.length > 0 && entries.forEach(function (q) {
+          var _q = (0, _slicedToArray3.default)(q, 2),
               key = _q[0],
               val = _q[1];
 
@@ -211,7 +118,7 @@
         var type = opt.type;
 
 
-        var finalOpt = _extends({
+        var finalOpt = (0, _extends3.default)({
           method: method
         }, opt);
         var headers = Object.assign({}, this.config.headers, opt.headers);
@@ -341,13 +248,13 @@
         });
 
         var _beforeHooks$reduce = this.beforeHooks.reduce(function (_ref2, hook) {
-          var _ref3 = _slicedToArray(_ref2, 2),
+          var _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
               url = _ref3[0],
               opt = _ref3[1];
 
           return hook([url, opt]) || [url, opt];
         }, [fetchUrl, fetchOpt]),
-            _beforeHooks$reduce2 = _slicedToArray(_beforeHooks$reduce, 2),
+            _beforeHooks$reduce2 = (0, _slicedToArray3.default)(_beforeHooks$reduce, 2),
             finalUrl = _beforeHooks$reduce2[0],
             finalOpt = _beforeHooks$reduce2[1];
 
@@ -407,7 +314,6 @@
         return this._sendRequest(http, url, 'DELETE', params, opt);
       }
     }]);
-
     return HttpShell;
   }();
 
@@ -415,7 +321,8 @@
     var _this4 = this;
 
     var http = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : fetch;
-    var allow = option.allow;
+    var _option$allow = option.allow,
+        allow = _option$allow === undefined ? ['get', 'post', 'put', 'delete', 'option'] : _option$allow;
 
     var clientWrapper = new HttpShell(option);
     var client = {
@@ -423,12 +330,12 @@
       injectBefore: clientWrapper.injectBefore.bind(clientWrapper),
       setErrorHook: clientWrapper.setError.bind(clientWrapper)
     };
-    var allowMethod = allow || ['get', 'post', 'put', 'delete', 'option'];
+    var allowMethod = allow;
 
     allowMethod.forEach(function (m) {
       client[m] = function () {
-        var _ref4 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(url, params, opt) {
-          return regeneratorRuntime.wrap(function _callee$(_context) {
+        var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(url, params, opt) {
+          return _regenerator2.default.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
@@ -460,13 +367,13 @@
       }
     },
     before: [function (_ref5) {
-      var _ref6 = _slicedToArray(_ref5, 2),
+      var _ref6 = (0, _slicedToArray3.default)(_ref5, 2),
           url = _ref6[0],
           opt = _ref6[1];
 
       console.log('hook1', url, opt);
     }, function (_ref7) {
-      var _ref8 = _slicedToArray(_ref7, 2),
+      var _ref8 = (0, _slicedToArray3.default)(_ref7, 2),
           url = _ref8[0],
           opt = _ref8[1];
 
@@ -482,7 +389,7 @@
   VFetch.HTTP_ERROR_MAP = HTTP_ERROR_MAP;
   VFetch.httpConfig = httpConfig;
 
-  if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object' && (typeof module === 'undefined' ? 'undefined' : _typeof(module)) === 'object') {
+  if ((typeof exports === 'undefined' ? 'undefined' : (0, _typeof3.default)(exports)) === 'object' && (typeof module === 'undefined' ? 'undefined' : (0, _typeof3.default)(module)) === 'object') {
     module.exports = VFetch;
     module.exports.default = VFetch;
   } else {
