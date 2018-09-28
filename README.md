@@ -61,6 +61,8 @@ const httpConfig = {
 + injectBefore(func) 增加前置拦截器
 + injectAfter(func) 增加后置拦截器
 
+**具体请求方法中携带的```options```中提供了```type```字段，可选 ```[download/upload]```,分别对应了上传文件和下载文件流的操作,```type:upload```时，将会把请求头中的```Content-Type```设置为```undefined```；```type:download```时，将会把```response```进行```response.blob()```操作**
+
 ## 内置error code
 
 + HTTP_STATUS_ERROR - 服务器未正常响应
@@ -157,5 +159,3 @@ httpError实例的构造函数为 vFetch.HttpError
 </html>
 ```
 
-## TODO
-**上传文件时从其他的```content-type```改为```multipart/form-data```时，```body```中的参数不携带```boundary```的问题**

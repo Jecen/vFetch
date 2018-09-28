@@ -207,18 +207,23 @@
         var opt = _ref.opt,
             method = _ref.method,
             params = _ref.params;
+        var type = opt.type;
+
 
         var finalOpt = _extends({
           method: method
         }, opt);
         var headers = Object.assign({}, this.config.headers, opt.headers);
+        if (type === 'upload') {
+          headers['Content-Type'] = undefined;
+        }
         finalOpt.headers = headers;
         if (Object.prototype.toString.call(params) === '[object FormData]') {
           finalOpt.body = params;
           return finalOpt;
         }
         if (method !== 'GET' && method !== 'OPTION' && params) {
-          if (!finalOpt.headers['Content-Type']) {
+          if (!finalOpt.headers['Content-Type'] && type !== 'upload') {
             finalOpt.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
           }
           var contentType = finalOpt.headers['Content-Type'];
@@ -228,7 +233,7 @@
             finalOpt.body = Object.keys(params).map(function (key) {
               return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
             }).join('&');
-          } else if (contentType.indexOf('multipart/form-data') > -1) {
+          } else if (contentType.indexOf('multipart/form-data') > -1 || !contentType) {
             finalOpt.body = this._getQueryData(params, 'formData');
           }
         }
@@ -286,10 +291,12 @@
       value: function _getApiPromise(http, finalUrl, finalOpt, overHandler, getOverStatus, setOver) {
         var _this2 = this;
 
+        var type = finalOpt.type;
+
         return new Promise(function (resolve, reject) {
           return http(finalUrl, finalOpt).then(function (rsp) {
             if (_this2._checkResponse(rsp, reject)) {
-              return rsp.json();
+              return type === "download" ? rsp.blob() : rsp.json();
             }
             return {};
           }).catch(function () {
@@ -301,9 +308,10 @@
             reject(error);
             overHandler(error);
           }).then(function (rsp) {
+            var rst = type === "download" ? { code: 606, data: rsp, success: true, msg: '操作成功' } : rsp;
             _this2.afterHooks.forEach(function (hook) {
               if (!getOverStatus()) {
-                var hookRst = hook(rsp);
+                var hookRst = hook(rst);
                 if (hookRst instanceof HttpError) {
                   reject(hookRst);
                   overHandler(hookRst);
@@ -311,7 +319,7 @@
               }
             });
             setOver();
-            resolve(rsp);
+            resolve(rst);
           });
         });
       }

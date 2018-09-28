@@ -64,11 +64,16 @@ class HttpShell {
   }
 
   _getRequestOptions({ opt, method, params }) {
+    const { type } = opt
+
     const finalOpt = {
       method,
       ...opt,
     }
     const headers = Object.assign({}, this.config.headers, opt.headers)
+    if (type === 'upload') { // 请求为上传文件时 Content-Type = undefined 让游览器根据参数类型自行判断类型
+      headers['Content-Type'] = undefined
+    } 
     finalOpt.headers = headers
     if (Object.prototype.toString.call(params) === '[object FormData]') {
       finalOpt.body = params
@@ -77,7 +82,7 @@ class HttpShell {
     if (method !== 'GET' &&
       method !== 'OPTION' &&
       params) {
-      if (!finalOpt.headers['Content-Type']) {
+      if (!finalOpt.headers['Content-Type'] && type !== 'upload') {
         finalOpt.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
       }
       const contentType = finalOpt.headers['Content-Type']
@@ -88,7 +93,7 @@ class HttpShell {
           return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
         })
           .join('&')
-      } else if (contentType.indexOf('multipart/form-data') > -1) {
+      } else if (contentType.indexOf('multipart/form-data') > -1 || !contentType) {
         finalOpt.body = this._getQueryData(params, 'formData')
       }
     }
@@ -141,11 +146,12 @@ class HttpShell {
   }
 
   _getApiPromise(http, finalUrl, finalOpt, overHandler, getOverStatus, setOver) {
+    const { type } = finalOpt
     return new Promise((resolve, reject) =>
       http(finalUrl, finalOpt)
         .then((rsp) => {
           if (this._checkResponse(rsp, reject)) {
-            return rsp.json()
+            return type === "download" ? rsp.blob() : rsp.json()
           }
           return {}
         })
@@ -159,9 +165,10 @@ class HttpShell {
           overHandler(error)
         })
         .then((rsp) => {
+          const rst = type === "download"  ? { code: 606, data: rsp, success: true, msg: '操作成功' } : rsp
           this.afterHooks.forEach(hook => {
             if (!getOverStatus()) {
-              const hookRst = hook(rsp)
+              const hookRst = hook(rst)
               if (hookRst instanceof HttpError) {
                 reject(hookRst)
                 overHandler(hookRst)
@@ -169,7 +176,7 @@ class HttpShell {
             }
           })
           setOver()
-          resolve(rsp)
+          resolve(rst)
         }))
   }
 
@@ -231,7 +238,6 @@ class HttpShell {
   delete(http, url, params, opt) {
     return this._sendRequest(http, url, 'DELETE', params, opt)
   }
-
 }
 
 function VFetch(option, http = fetch) {
