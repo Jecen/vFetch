@@ -74,6 +74,7 @@ class HttpShell {
     const headers = Object.assign({}, this.config.headers, opt.headers)
     if (type === 'upload') { // 请求为上传文件时 Content-Type = undefined 让游览器根据参数类型自行判断类型
       headers['Content-Type'] = undefined // eslint-disable-line
+      delete headers['Content-Type']
     }
     finalOpt.headers = headers
     if (Object.prototype.toString.call(params) === '[object FormData]') {
