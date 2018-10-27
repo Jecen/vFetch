@@ -86,7 +86,7 @@ class HttpShell {
       if (!finalOpt.headers['Content-Type'] && type !== 'upload') {
         finalOpt.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
       }
-      const contentType = finalOpt.headers['Content-Type']
+      const contentType = finalOpt.headers['Content-Type'] || ''
       if (contentType.indexOf('application/json') > -1) {
         finalOpt.body = typeof params === 'string' ? params : JSON.stringify(params)
       } else if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
