@@ -124,6 +124,7 @@
         var headers = Object.assign({}, this.config.headers, opt.headers);
         if (type === 'upload') {
           headers['Content-Type'] = undefined;
+          delete headers['Content-Type'];
         }
         finalOpt.headers = headers;
         if (Object.prototype.toString.call(params) === '[object FormData]') {
