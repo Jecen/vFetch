@@ -1,7 +1,7 @@
 {
   "name": "venus-fetch",
-  "version": "1.0.6",
-  "description": "esay to use fetch lib",
+  "version": "1.0.7",
+  "description": "easy to use fetch lib",
   "main": "dist/vFetch.min.js",
   "scripts": {
     "watch": "babel -d dist/ src5 --watch",

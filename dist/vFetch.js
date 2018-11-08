@@ -169,7 +169,7 @@
         }
         var finalUrl = urlType !== 'FULL' ? baseUrl + url : url;
 
-        if (method === 'GET' || method === 'OPTION') {
+        if (method === 'GET' || method === 'DELETE' || method === 'OPTION') {
           queryString = this._getQueryData(params);
           if (queryString && queryString.length) {
             finalUrl += '?' + queryString;
