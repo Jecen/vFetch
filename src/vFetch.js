@@ -51,6 +51,9 @@ class HttpShell {
     if (!query) {
       return null
     }
+    if (typeof module !== 'undefined' && module.exports) {
+      const FormData = require('form-data');
+    }
     const queryList = []
     const formData = new FormData()
     const entries = Object.entries(query)
@@ -236,9 +239,13 @@ class HttpShell {
   }
 }
 
-function VFetch(option, http = fetch) {
+function VFetch(option, instance) {
+  let http = instance || fetch
   const { allow = ['get', 'post', 'put', 'delete', 'option'] } = option
-  const clientWrapper = new HttpShell(option)
+  const clientWrapper = new HttpShell({
+    ...option,
+    isNode: !!instance
+  })
   const client = {
     injectAfter: clientWrapper.injectAfter.bind(clientWrapper),
     injectBefore: clientWrapper.injectBefore.bind(clientWrapper),

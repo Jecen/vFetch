@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['module', 'exports', 'babel-runtime/helpers/typeof', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/helpers/extends', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/helpers/createClass', 'babel-runtime/helpers/classCallCheck'], factory);
+    define(['module', 'exports', 'babel-runtime/helpers/typeof', 'babel-runtime/regenerator', 'babel-runtime/helpers/asyncToGenerator', 'babel-runtime/helpers/extends', 'babel-runtime/helpers/slicedToArray', 'babel-runtime/helpers/createClass', 'babel-runtime/helpers/classCallCheck', 'form-data'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('babel-runtime/helpers/typeof'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/helpers/extends'), require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/helpers/createClass'), require('babel-runtime/helpers/classCallCheck'));
+    factory(module, exports, require('babel-runtime/helpers/typeof'), require('babel-runtime/regenerator'), require('babel-runtime/helpers/asyncToGenerator'), require('babel-runtime/helpers/extends'), require('babel-runtime/helpers/slicedToArray'), require('babel-runtime/helpers/createClass'), require('babel-runtime/helpers/classCallCheck'), require('form-data'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global._typeof, global.regenerator, global.asyncToGenerator, global._extends, global.slicedToArray, global.createClass, global.classCallCheck);
+    factory(mod, mod.exports, global._typeof, global.regenerator, global.asyncToGenerator, global._extends, global.slicedToArray, global.createClass, global.classCallCheck, global.formData);
     global.vFetch = mod.exports;
   }
-})(this, function (module, exports, _typeof2, _regenerator, _asyncToGenerator2, _extends2, _slicedToArray2, _createClass2, _classCallCheck2) {
+})(this, function (module, exports, _typeof2, _regenerator, _asyncToGenerator2, _extends2, _slicedToArray2, _createClass2, _classCallCheck2, _FormData) {
   'use strict';
 
   var _typeof3 = _interopRequireDefault(_typeof2);
@@ -94,6 +94,7 @@
         if (!query) {
           return null;
         }
+        if (typeof module !== 'undefined' && module.exports) {}
         var queryList = [];
         var formData = new FormData();
         var entries = Object.entries(query);
@@ -318,14 +319,16 @@
     return HttpShell;
   }();
 
-  function VFetch(option) {
+  function VFetch(option, instance) {
     var _this4 = this;
 
-    var http = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : fetch;
+    var http = instance || fetch;
     var _option$allow = option.allow,
         allow = _option$allow === undefined ? ['get', 'post', 'put', 'delete', 'option'] : _option$allow;
 
-    var clientWrapper = new HttpShell(option);
+    var clientWrapper = new HttpShell((0, _extends3.default)({}, option, {
+      isNode: !!instance
+    }));
     var client = {
       injectAfter: clientWrapper.injectAfter.bind(clientWrapper),
       injectBefore: clientWrapper.injectBefore.bind(clientWrapper),
@@ -350,7 +353,7 @@
           }, _callee, _this4);
         }));
 
-        return function (_x6, _x7, _x8) {
+        return function (_x5, _x6, _x7) {
           return _ref4.apply(this, arguments);
         };
       }();
