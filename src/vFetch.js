@@ -1,3 +1,6 @@
+
+import NodeFormData from 'form-data';
+ 
 class HttpError {
   constructor(errorInfo) {
     const {
@@ -51,11 +54,9 @@ class HttpShell {
     if (!query) {
       return null
     }
-    if (typeof module !== 'undefined' && module.exports) {
-      const FormData = require('form-data');
-    }
+   
     const queryList = []
-    const formData = new FormData()
+    const formData = (typeof module !== 'undefined' && module.exports) ? new NodeFormData() :  new FormData()
     const entries = Object.entries(query)
     entries.length > 0 && entries.forEach((q) => {
       const [key, val] = q
@@ -296,4 +297,5 @@ if (typeof exports === 'object' && typeof module === 'object') {
   module.exports.default = VFetch
 } else {
   window.VFetch = VFetch
+  console.log(window, '!!!!', VFetch)
 }

@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
-  <script src="../src/vFetch.js"></script>
+  <script src="../dist/vFetch.js"></script>
 </head>
 <body>
   <script>
+    
+    console.log(window)
     console.log(window, VFetch.HttpError, VFetch.HTTP_ERROR_MAP, VFetch.httpConfig)
     const http = VFetch(VFetch.httpConfig)
 
     http.injectAfter(function(rst){
       console.log('injectAfter', rst)
-      return new tFetch.HttpError({
+      return new VFetch.HttpError({
         code: '001',
         message: 'error test',
         httpStatus: null,
@@ -27,11 +29,11 @@
       console.log(e, 'error');
     })
 
-    http.post('t.json', {a:2, c:3})
+    http.get('/t.json', {a:2, c:3})
       .then(rst => {
-        //console.log(rst, 'success');
+        console.log(rst, 'success');
       }).catch(e => {
-        //console.log(e, 'error');
+        console.log(e, 'error');
       })
   </script> 
 </body>
