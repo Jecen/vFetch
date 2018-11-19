@@ -1,5 +1,5 @@
 
-import NodeFormData from 'form-data';
+const NodeFormData = require('form-data');
  
 class HttpError {
   constructor(errorInfo) {
@@ -295,7 +295,8 @@ VFetch.httpConfig = httpConfig
 if (typeof exports === 'object' && typeof module === 'object') {
   module.exports = VFetch
   module.exports.default = VFetch
-} else {
+}
+
+if (typeof window === 'object') {
   window.VFetch = VFetch
-  console.log(window, '!!!!', VFetch)
 }
