@@ -1,6 +1,6 @@
-
 const NodeFormData = require('form-data');
- 
+
+
 class HttpError {
   constructor(errorInfo) {
     const {
@@ -54,9 +54,9 @@ class HttpShell {
     if (!query) {
       return null
     }
-   
+
     const queryList = []
-    const formData = (typeof module !== 'undefined' && module.exports) ? new NodeFormData() :  new FormData()
+    const formData = (typeof module !== 'undefined' && module.exports) ? new NodeFormData() :  new FormData() 
     const entries = Object.entries(query)
     entries.length > 0 && entries.forEach((q) => {
       const [key, val] = q
@@ -241,25 +241,24 @@ class HttpShell {
 }
 
 function VFetch(option, instance) {
-  let http = instance || fetch
+  const http = instance || fetch
   const { allow = ['get', 'post', 'put', 'delete', 'option'] } = option
   const clientWrapper = new HttpShell({
     ...option,
-    isNode: !!instance
+    isNode: !!instance,
   })
   const client = {
     injectAfter: clientWrapper.injectAfter.bind(clientWrapper),
     injectBefore: clientWrapper.injectBefore.bind(clientWrapper),
     setErrorHook: clientWrapper.setError.bind(clientWrapper),
   }
-  const allowMethod = allow 
+  const allowMethod = allow
 
   allowMethod.forEach(m => {
     client[m] = async (url, params, opt) => clientWrapper[m](http, url, params, opt)
   })
 
   return client
-
 }
 
 const httpConfig = {
@@ -287,16 +286,8 @@ const httpConfig = {
   timeout: 5000,
 }
 
-
 VFetch.HttpError = HttpError
 VFetch.HTTP_ERROR_MAP = HTTP_ERROR_MAP
 VFetch.httpConfig = httpConfig
 
-if (typeof exports === 'object' && typeof module === 'object') {
-  module.exports = VFetch
-  module.exports.default = VFetch
-}
-
-if (typeof window === 'object') {
-  window.VFetch = VFetch
-}
+module.exports = VFetch

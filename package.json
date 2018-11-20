@@ -1,8 +1,10 @@
 {
   "name": "venus-fetch",
-  "version": "1.0.11",
+  "version": "1.0.15",
   "description": "easy to use fetch lib",
-  "main": "dist/vFetch.min.js",
+  "main": "dist/venus-fetch.node.js",
+  "browser": "dist/venus-fetch.web.js",
+  "module": "src/index.js",
   "scripts": {
     "build": "npx webpack",
     "prepublish": "npm run build",
@@ -22,6 +24,12 @@
     "form-data": "^2.3.3"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-3": "^6.24.1",
+    "regenerator-runtime": "^0.13.1",
     "webpack": "^4.25.1",
     "webpack-cli": "^3.1.2"
   }
