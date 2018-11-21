@@ -6,8 +6,9 @@ const clientConfig = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'venus-fetch.web.js',
+        library: 'vFetch',
         libraryTarget: 'umd',
-        umdNamedDefine: true
+        umdNamedDefine: true,
     },
     module: {
         rules: [{

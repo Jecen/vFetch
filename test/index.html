@@ -9,12 +9,12 @@
 </head>
 <body>
   <script>
-    // const VFetch = window.VFetch.default
-    const http = VFetch(VFetch.httpConfig)
+    // const vFetch = window.vFetch.default
+    const http = vFetch(vFetch.httpConfig)
 
     http.injectAfter(function(rst){
       console.log('injectAfter', rst)
-      return new VFetch.HttpError({
+      return new vFetch.HttpError({
         code: '001',
         message: 'error test',
         httpStatus: null,
