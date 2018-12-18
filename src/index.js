@@ -134,7 +134,7 @@ class HttpShell {
     return finalUrl
   }
 
-  _sendRequestWithTimeOut(apiPromise, overHandler) {
+  _sendRequestWithTimeOut(apiPromise, overHandler, timeout) {
     return Promise.race([
       apiPromise,
       new Promise((_, reject) => { // eslint-disable-line
@@ -146,7 +146,7 @@ class HttpShell {
           })
           reject(error)
           overHandler(error)
-        }, this.timeout)
+        }, timeout)
       }),
     ])
   }
@@ -185,7 +185,7 @@ class HttpShell {
   _sendRequest(http, url, method = 'GET', params = {}, opt = {}) {
 
     const fetchUrl = this._initUrl(url, method, opt, params)
-
+    const timeout = opt.timeout || this.timeout
     const fetchOpt = this._getRequestOptions({
       opt,
       method,
@@ -201,7 +201,7 @@ class HttpShell {
       isOver = true
     }
     const apiPromise = this._getApiPromise(http, finalUrl, finalOpt, overHandler, () => isOver, () => { isOver = true })
-    const request = this._sendRequestWithTimeOut(apiPromise, overHandler)
+    const request = this._sendRequestWithTimeOut(apiPromise, overHandler, timeout)
     return request
   }
 
