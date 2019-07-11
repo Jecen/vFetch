@@ -7,10 +7,12 @@ class HttpError {
       message,
       code,
       httpStatus = 200,
+      nativeError,
     } = errorInfo
     this.httpStatus = httpStatus
     this.message = message
     this.code = code
+    this.nativeError = nativeError
 
     this.prototype = Object.create(Error.prototype)
     this.prototype.constructor = this
@@ -156,11 +158,12 @@ class HttpShell {
     return new Promise((resolve, reject) =>
       http(finalUrl, finalOpt)
         .then((rsp) => this._checkResponse(type === 'download' ? rsp.blob() : rsp.json(), reject))
-        .catch(() => {
+        .catch((e) => {
           const error = new HttpError({
             message: '请求失败，请检查网络情况，并联系管理员。',
             code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
             httpStatus: null,
+            e,
           })
           reject(error)
           overHandler(error)
