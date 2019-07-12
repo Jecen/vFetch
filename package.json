@@ -1,6 +1,6 @@
 {
   "name": "venus-fetch",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "easy to use fetch lib",
   "main": "dist/venus-fetch.node.js",
   "browser": "dist/venus-fetch.web.js",

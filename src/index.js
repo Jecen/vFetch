@@ -1,4 +1,4 @@
-const NodeFormData = require('form-data');
+const NodeFormData = require('form-data')
 
 
 class HttpError {
@@ -44,12 +44,14 @@ class HttpShell {
       after = [], // 后置钩子
       error = null, // error钩子
       timeout = 5000,
+      wrapperFunc = null,
     } = option
     this.config = config
     this.beforeHooks = before
     this.afterHooks = after
     this.errorHook = error
     this.timeout = timeout
+    this.wrapperFunc = wrapperFunc
   }
 
   _getQueryData(query, type = 'string') {
@@ -58,7 +60,7 @@ class HttpShell {
     }
 
     const queryList = []
-    const formData = (typeof module !== 'undefined' && module.exports) ? new NodeFormData() :  new FormData() 
+    const formData = (typeof module !== 'undefined' && module.exports) ? new NodeFormData() : new FormData()
     const entries = Object.entries(query)
     entries.length > 0 && entries.forEach((q) => {
       const [key, val] = q
@@ -72,11 +74,7 @@ class HttpShell {
 
   _getRequestOptions({ opt, method, params }) {
     const { type } = opt
-
-    const finalOpt = {
-      method,
-      ...opt,
-    }
+    const finalOpt = { method, ...opt }
     const headers = Object.assign({}, this.config.headers, opt.headers)
     if (type === 'upload') { // 请求为上传文件时 Content-Type = undefined 让游览器根据参数类型自行判断类型
       headers['Content-Type'] = undefined // eslint-disable-line
@@ -87,9 +85,7 @@ class HttpShell {
       finalOpt.body = params
       return finalOpt
     }
-    if (method !== 'GET' &&
-      method !== 'OPTION' &&
-      params) {
+    if (method !== 'GET' && method !== 'OPTION' && params) {
       if (!finalOpt.headers['Content-Type'] && type !== 'upload') {
         finalOpt.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
       }
@@ -106,10 +102,6 @@ class HttpShell {
       }
     }
     return Object.assign({}, this.config, finalOpt)
-  }
-
-  _checkResponse(rst, reject) { // eslint-disable-line
-    return rst
   }
 
   _initUrl(url, method, opt, params) {
@@ -153,35 +145,84 @@ class HttpShell {
     ])
   }
 
+  _checkResponse(rsp, reject, opt) { // eslint-disable-line
+    const [rspContentType] = rsp.headers.get('Content-Type').split(';')
+    const AcceptType = opt.headers.Accept
+    const isAllAllow = AcceptType.indexOf('*/*') > -1
+    if (AcceptType.indexOf(rspContentType) > -1 || isAllAllow) { // 返回值类型在期望接收类型范围内
+      // if (rspContentType.indexOf('text') > -1) {
+      //   return rsp.text()
+      // } else if (rspContentType.indexOf('json') > -1) {
+      //   return rsp.json()
+      // } else {
+      //   const error = new HttpError({
+      //     message: `暂不支持类型数据，解析响应出错，请联系管理员。[response-content-type:${rspContentType}]`,
+      //     code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
+      //     httpStatus: null,
+      //   })
+      //   return reject(error)
+      // }
+      return rsp
+    } else {
+      const error = new HttpError({
+        message: `响应数据类型与预期不符。[accept:${AcceptType};response-content-type:${rspContentType}]`,
+        code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
+        httpStatus: null,
+      })
+      return reject(error)
+    }
+  }
+
+  async _parseResponse(rsp, resolve, reject, opt, overHandler, getOverStatus, setOver) {
+    const { type } = opt
+    const [rspContentType] = rsp.headers.get('Content-Type').split(';')
+    let rst = null
+    if (type === 'download') {
+      rst = this.wrapperFunc ? this.wrapperFunc(await rsp.blob(), type) : await rsp.blob()
+    } else if (rspContentType.indexOf('text') > -1) {
+      rst = this.wrapperFunc ? this.wrapperFunc(await rsp.text(), 'text') : await rsp.text()
+    } else if (rspContentType.indexOf('json') > -1) {
+      rst = await rsp.json()
+    } else {
+      const error = new HttpError({
+        message: `暂不支持类型数据，解析响应出错，请联系管理员。[response-content-type:${rspContentType}]`,
+        code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
+        httpStatus: null,
+      })
+      reject(error)
+    }
+
+    this.afterHooks.length > 0 && this.afterHooks.forEach(hook => {
+      if (!getOverStatus()) {
+        const hookRst = hook(rst)
+        if (hookRst instanceof HttpError) {
+          reject(hookRst)
+          overHandler(hookRst)
+        }
+      }
+    })
+    setOver()
+    resolve(rst)
+  }
+
+
   _getApiPromise(http, finalUrl, finalOpt, overHandler, getOverStatus, setOver) {
-    const { type } = finalOpt
     return new Promise((resolve, reject) =>
       http(finalUrl, finalOpt)
-        .then((rsp) => this._checkResponse(type === 'download' ? rsp.blob() : rsp.json(), reject))
-        .catch((e) => {
+        .then((rsp) => {
+          const temp = this._checkResponse(rsp, reject, finalOpt)
+          this._parseResponse(temp, resolve, reject, finalOpt, overHandler, getOverStatus, setOver)
+        })
+        .catch(() => {
           const error = new HttpError({
-            message: '请求失败，请检查网络情况，并联系管理员。',
+            message: `解析响应出错，请联系管理员。`,
             code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
             httpStatus: null,
-            e,
           })
           reject(error)
           overHandler(error)
         })
-        .then((rsp) => {
-          const rst = type === 'download' ? { code: 606, data: rsp, success: true, msg: '操作成功' } : rsp
-          this.afterHooks.length > 0 && this.afterHooks.forEach(hook => {
-            if (!getOverStatus()) {
-              const hookRst = hook(rst)
-              if (hookRst instanceof HttpError) {
-                reject(hookRst)
-                overHandler(hookRst)
-              }
-            }
-          })
-          setOver()
-          resolve(rst)
-        }))
+    )
   }
 
 
