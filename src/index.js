@@ -231,22 +231,28 @@ class HttpShell {
     const fetchUrl = this._initUrl(url, method, opt, params)
     const timeout = opt.timeout || this.timeout
 
+    const initOpt = this._getRequestOptions({
+      opt,
+      method,
+      params,
+    })
+
     const [finalUrl, finalOpt] = this.beforeHooks.reduce(([url, opt], hook) => {
       return hook([url, opt]) || [url, opt]
-    }, [fetchUrl, opt])
+    }, [fetchUrl, initOpt])
 
     const fetchOpt = this._getRequestOptions({
       opt: finalOpt,
       method,
       params,
     })
-    
+
     let isOver = false
     const overHandler = (error) => {
       !isOver && this.errorHook && this.errorHook(error, fetchUrl)
       isOver = true
     }
-    const apiPromise = this._getApiPromise(http, finalUrl, finalOpt, overHandler, () => isOver, () => { isOver = true })
+    const apiPromise = this._getApiPromise(http, finalUrl, fetchOpt, overHandler, () => isOver, () => { isOver = true })
     const request = this._sendRequestWithTimeOut(apiPromise, overHandler, timeout)
     return request
   }
