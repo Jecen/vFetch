@@ -229,13 +229,9 @@ class HttpShell {
   _sendRequest(http, url, method = 'GET', params = {}, opt = {}) {
 
     const fetchUrl = this._initUrl(url, method, opt, params)
-    const timeout = opt.timeout || this.timeout
+    const timeout = opt.timeout || this.timeout 
 
-    const initOpt = this._getRequestOptions({
-      opt,
-      method,
-      params,
-    })
+    const initOpt = { ...opt, method, params }
 
     const [finalUrl, finalOpt] = this.beforeHooks.reduce(([url, opt], hook) => {
       return hook([url, opt]) || [url, opt]
@@ -244,7 +240,7 @@ class HttpShell {
     const fetchOpt = this._getRequestOptions({
       opt: finalOpt,
       method,
-      params,
+      params: finalOpt.params || params,
     })
 
     let isOver = false
