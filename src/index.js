@@ -72,6 +72,26 @@ class HttpShell {
     return type === 'string' ? queryList.join('&') : formData
   }
 
+  _getInitOpt({ opt, method, params }) {
+    const { type } = opt
+    const finalOpt = { method, ...opt }
+    const headers = Object.assign({}, this.config.headers, opt.headers)
+    if (type === 'upload') { // 请求为上传文件时 Content-Type = undefined 让游览器根据参数类型自行判断类型
+      headers['Content-Type'] = undefined // eslint-disable-line
+      delete headers['Content-Type']
+    }
+    finalOpt.headers = headers
+
+    if (method !== 'GET' && method !== 'OPTION' && params) {
+      if (!finalOpt.headers['Content-Type'] && type !== 'upload') {
+        finalOpt.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+      }
+      const contentType = finalOpt.headers['Content-Type'] || ''
+    }
+
+    return finalOpt
+  }
+
   _getRequestOptions({ opt, method, params }) {
     const { type } = opt
     const finalOpt = { method, ...opt }
@@ -231,7 +251,7 @@ class HttpShell {
     const fetchUrl = this._initUrl(url, method, opt, params)
     const timeout = opt.timeout || this.timeout 
 
-    const initOpt = { ...opt, method, params }
+    const initOpt = this._getInitOpt({ opt, method, params })
 
     const [finalUrl, finalOpt] = this.beforeHooks.reduce(([url, opt], hook) => {
       return hook([url, opt]) || [url, opt]
