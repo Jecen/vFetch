@@ -233,13 +233,14 @@ class HttpShell {
 
     const [finalUrl, finalOpt] = this.beforeHooks.reduce(([url, opt], hook) => {
       return hook([url, opt]) || [url, opt]
-    }, [fetchUrl, fetchOpt])
+    }, [fetchUrl, opt])
 
     const fetchOpt = this._getRequestOptions({
-      opt: fetchOpt,
+      opt: finalOpt,
       method,
       params,
     })
+    
     let isOver = false
     const overHandler = (error) => {
       !isOver && this.errorHook && this.errorHook(error, fetchUrl)
