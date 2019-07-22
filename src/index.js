@@ -236,7 +236,7 @@ class HttpShell {
     }, [fetchUrl, fetchOpt])
 
     const fetchOpt = this._getRequestOptions({
-      fetchOpt,
+      opt: fetchOpt,
       method,
       params,
     })
