@@ -86,13 +86,13 @@ class HttpShell {
       if (!finalOpt.headers['Content-Type'] && type !== 'upload') {
         finalOpt.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
       }
-      const contentType = finalOpt.headers['Content-Type'] || ''
     }
 
     return finalOpt
   }
 
-  _getRequestOptions({ opt, method, params }) {
+  _getRequestOptions({ opt, method, params, url }) {
+    let rstUrl = url
     const { type } = opt
     const finalOpt = { method, ...opt }
     const headers = Object.assign({}, this.config.headers, opt.headers)
@@ -106,6 +106,7 @@ class HttpShell {
       return finalOpt
     }
     if (method !== 'GET' && method !== 'OPTION' && params) {
+
       if (!finalOpt.headers['Content-Type'] && type !== 'upload') {
         finalOpt.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
       }
@@ -120,14 +121,17 @@ class HttpShell {
       } else if (contentType.indexOf('multipart/form-data') > -1 || !contentType) {
         finalOpt.body = this._getQueryData(params, 'formData')
       }
+    } else if ((method === 'GET' || method === 'DELETE' || method === 'OPTION') && params) {
+      const queryString = this._getQueryData(params)
+      if (queryString && queryString.length) {
+        rstUrl += `?${queryString}`
+      }
     }
-    return Object.assign({}, this.config, finalOpt)
+    return [rstUrl,  Object.assign({}, this.config, finalOpt)]
   }
 
   _initUrl(url, method, opt, params) {
     const urlType = url.indexOf('://') !== -1 ? 'FULL' : 'PATH'
-
-    let queryString = null
 
     let baseUrl = this.config.baseUrl || ''
     if (opt && opt.baseUrl) {
@@ -137,13 +141,6 @@ class HttpShell {
     let finalUrl = urlType !== 'FULL' ?
       baseUrl + url :
       url
-
-    if (method === 'GET' || method === 'DELETE' || method === 'OPTION') {
-      queryString = this._getQueryData(params)
-      if (queryString && queryString.length) {
-        finalUrl += `?${queryString}`
-      }
-    }
 
     return finalUrl
   }
@@ -248,16 +245,17 @@ class HttpShell {
 
   _sendRequest(http, url, method = 'GET', params = {}, opt = {}) {
 
-    const fetchUrl = this._initUrl(url, method, opt, params)
+    const initUrl = this._initUrl(url, method, opt, params)
     const timeout = opt.timeout || this.timeout 
 
     const initOpt = this._getInitOpt({ opt, method, params })
 
     const [finalUrl, finalOpt] = this.beforeHooks.reduce(([url, opt], hook) => {
       return hook([url, opt]) || [url, opt]
-    }, [fetchUrl, initOpt])
+    }, [initUrl, initOpt])
 
-    const fetchOpt = this._getRequestOptions({
+    const [fetchUrl, fetchOpt] = this._getRequestOptions({
+      url: finalUrl,
       opt: finalOpt,
       method,
       params: finalOpt.params || params,
@@ -268,7 +266,7 @@ class HttpShell {
       !isOver && this.errorHook && this.errorHook(error, fetchUrl)
       isOver = true
     }
-    const apiPromise = this._getApiPromise(http, finalUrl, fetchOpt, overHandler, () => isOver, () => { isOver = true })
+    const apiPromise = this._getApiPromise(http, fetchUrl, fetchOpt, overHandler, () => isOver, () => { isOver = true })
     const request = this._sendRequestWithTimeOut(apiPromise, overHandler, timeout)
     return request
   }
