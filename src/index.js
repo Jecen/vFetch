@@ -271,6 +271,21 @@ class HttpShell {
     return request
   }
 
+  setOption(option) {
+
+    const {
+      conf: config = this.config,
+      timeout = this.timeout,
+      wrapperFunc = this.wrapperFunc,
+    } = option
+
+
+    this.config = Object.assign(this.config, config)
+    this.timeout = timeout
+    this.wrapperFunc = wrapperFunc
+
+  }
+
   injectAfter(after) {
     after && this.afterHooks.push(after)
   }
