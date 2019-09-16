@@ -332,6 +332,7 @@ function VFetch(option, instance) {
     injectAfter: clientWrapper.injectAfter.bind(clientWrapper),
     injectBefore: clientWrapper.injectBefore.bind(clientWrapper),
     setErrorHook: clientWrapper.setError.bind(clientWrapper),
+    setOption: clientWrapper.setOption.bind(clientWrapper),
   }
   const allowMethod = allow
 
