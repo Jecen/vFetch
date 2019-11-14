@@ -224,22 +224,26 @@ class HttpShell {
 
 
   _getApiPromise(http, finalUrl, finalOpt, overHandler, getOverStatus, setOver) {
-    return new Promise((resolve, reject) =>
-      http(finalUrl, finalOpt)
-        .then((rsp) => {
-          const temp = this._checkResponse(rsp, reject, finalOpt)
-          this._parseResponse(temp, resolve, reject, finalOpt, overHandler, getOverStatus, setOver)
+    return new Promise((resolve, reject) => {
+      const { body } = finalOpt
+      if (body === "{}") {
+        delete finalOpt['body']
+      }
+      return http(finalUrl, finalOpt)
+      .then((rsp) => {
+        const temp = this._checkResponse(rsp, reject, finalOpt)
+        this._parseResponse(temp, resolve, reject, finalOpt, overHandler, getOverStatus, setOver)
+      })
+      .catch(() => {
+        const error = new HttpError({
+          message: `解析响应出错，请联系管理员。`,
+          code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
+          httpStatus: null,
         })
-        .catch(() => {
-          const error = new HttpError({
-            message: `解析响应出错，请联系管理员。`,
-            code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
-            httpStatus: null,
-          })
-          reject(error)
-          overHandler(error)
-        })
-    )
+        reject(error)
+        overHandler(error)
+      })
+    })
   }
 
 
