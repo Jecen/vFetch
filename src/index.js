@@ -64,7 +64,7 @@ class HttpShell {
     const entries = Object.entries(query)
     entries.length > 0 && entries.forEach((q) => {
       const [key, val] = q
-      if (val.length !== 0 && val) {
+      if (val.length !== 0 && val !== null && val !== undefined && val !== NaN) {
         queryList.push(`${key}=${encodeURIComponent(val)}`)
         formData.append(key, val)
       }
@@ -135,7 +135,7 @@ class HttpShell {
 
     let baseUrl = this.config.baseUrl || ''
     if (opt && opt.baseUrl) {
-      const { baseUrl: bUrl } = baseUrl
+      const { baseUrl: bUrl } = opt
       baseUrl = bUrl
     }
     let finalUrl = urlType !== 'FULL' ?
