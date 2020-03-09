@@ -128,7 +128,7 @@ class HttpClient implements IHttpClient {
    */
   private _initOpt(method: String, params: any, opt?: SendOptions): RequestOptions {
     const finalOpt = { method, params, ...opt || {} }
-    const headers = Object.assign({}, this.config.headers, opt.headers || {})
+    const headers = Object.assign({headers: {}}, this.config.headers, opt ? opt.headers : {})
     const isSoftMethod = method === 'GET' || method === 'DELETE'
     const isAlreadySetContentType = !!finalOpt.headers['Content-Type']
     const isHasPayload = !!params
