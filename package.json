@@ -1,10 +1,11 @@
 {
-  "name": "venus-fetch",
+  "name": "@ourea/fetch",
   "version": "1.1.17",
   "description": "easy to use fetch lib",
-  "main": "dist/venus-fetch.node.js",
-  "browser": "dist/venus-fetch.web.js",
-  "module": "src/index.js",
+  "main": "dist/fetch.node.js",
+  "types": "@types/index.d.ts",
+  "browser": "dist/fetch.web.js",
+  "module": "src/index.ts",
   "scripts": {
     "build": "npx webpack",
     "prepublish": "npm run build",
@@ -21,7 +22,10 @@
   "author": "Jacen",
   "license": "ISC",
   "dependencies": {
-    "form-data": "^2.3.3"
+    "@types/form-data": "^2.5.0",
+    "@types/node": "^13.9.0",
+    "form-data": "^2.3.3",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -30,6 +34,8 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-3": "^6.24.1",
     "regenerator-runtime": "^0.13.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3",
     "webpack": "^4.25.1",
     "webpack-cli": "^3.1.2"
   }
