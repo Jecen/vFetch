@@ -1,6 +1,5 @@
 const NodeFormData = require('form-data')
 
-
 class HttpError {
   constructor(errorInfo) {
     const {
