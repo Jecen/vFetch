@@ -59,10 +59,13 @@ declare module 'HttpClient' {
     [header: string]: string | string[] | undefined;
   }
 
-  interface SendOptions {
+  interface ISendOptions {
     baseUrl?: string;
     headers?: HttpHeaders;
     timeout?: Number;
+    immediately?: Boolean;
+    skipBefore?: Boolean;
+    skipAfter?: Boolean;
   }
 
   interface RequestOptions {
@@ -73,7 +76,9 @@ declare module 'HttpClient' {
     baseUrl?: String;
     body?: any;
     customType?: String;
-    downloadType?: String;
+    immediately?: Boolean;
+    skipBefore?: Boolean;
+    skipAfter?: Boolean;
   }
 
   interface ClientConfig {
@@ -88,7 +93,7 @@ declare module 'HttpClient' {
     error?: Function,
     timeout?: Number,
     wrapperFunc?: Function,
-    downloadType?: String,
+    allow?: String[],
   }
   
   interface IHttpClient {
