@@ -176,7 +176,7 @@ export default class Request {
     }
   }
 
-  public async send(http) {
+  public async send(http: any) {
     const fetchOptions = Object.assign({}, this.opt)
     const { timeout, body } = fetchOptions
     if (body === "{}") {
