@@ -147,6 +147,7 @@ class Client implements IClient {
       } 
     } catch (error) { // 前置钩子可能出现的报错
       this.errorHook && this.errorHook(new HttpError(error), finalUrl, finalOpt)
+      return
     }
 
     const request = new Request({url: finalUrl, opt: finalOpt})
@@ -154,8 +155,8 @@ class Client implements IClient {
     try {
       response = await request.send(http)
     } catch (error) {
-      console.log(error, '')
       this.errorHook && this.errorHook(error, finalUrl, finalOpt)
+      return
     }
 
     if(finalOpt.customType === 'DOWNLOAD') { // 下载不用走 后置的钩子函数
@@ -177,7 +178,8 @@ class Client implements IClient {
       try {
         await this._afterHookGenerator(response)
       } catch (error) {
-        throw error
+        this.errorHook && this.errorHook(error, finalUrl, finalOpt)
+        return
       }
     }
 

@@ -1,20 +1,21 @@
-# vFetch
+# @ourea/fetch
 
 ## 安装
 
-```bash
-npm install venus-fetch
+```shell
+$ npm install @ourea/fetch --save
 ```
 
 ## 使用
 
 ```javascript
-import VFetch from 'venus-fetch'
+import Http, { HttpError } from '@ourea/fetch'
 
-const http = VFetch(opt)
+const http = Http(opt)
 ```
 
 ## 初始化配置
+
 ```javascript
 const httpConfig = {
   conf: {
@@ -24,6 +25,7 @@ const httpConfig = {
       Accept: 'application/json',
       // 'Content-Type': 'application/json',
     },
+    timeout: 5000,
   },
   before: [
     ([url, opt]) => {
@@ -38,13 +40,12 @@ const httpConfig = {
       console.log('after hook1', rsp)
     },
   ],
-  timeout: 5000,
 }
 ```
 
 | 配置 | 说明 | 默认值 | 其它 |
 | - | - | - | - |
-| allow | client 允许的请求类型 | ['get', 'post', 'put', 'delete', 'option'] | 可选 |
+| allow | client 允许的请求类型 | ['get', 'post', 'put', 'delete', 'upload'， 'download'] | 可选 |
 | before | 前置钩子(钩子数组) | []| 可选 | 
 | after | 后置钩子(钩子数组) | [] | 可选 | 
 | conf | fetch配置项 | | 参考fetch api 文档 |
@@ -56,12 +57,11 @@ const httpConfig = {
 + post(url, [parmas], [options])  // 基于初始化配置的 allow
 + put(url, [parmas], [options]) // 基于初始化配置的 allow
 + delete(url, [parmas], [options]) // 基于初始化配置的 allow
-+ option(url, [parmas], [options]) // 基于初始化配置的 allow
++ upload(url, [parmas], [options]) // 基于初始化配置的 allow
++ download(url, [parmas], [options]) // 基于初始化配置的 allow
 + setErrorHook(func) 设置全局错误处理器
 + injectBefore(func) 增加前置拦截器
 + injectAfter(func) 增加后置拦截器
-
-**具体请求方法中携带的```options```中提供了```type```字段，可选 ```[download/upload]```,分别对应了上传文件和下载文件流的操作,```type:upload```时，将会把请求头中的```Content-Type```设置为```undefined```；```type:download```时，将会把```response```进行```response.blob()```操作**
 
 ## 内置error code
 
@@ -100,7 +100,7 @@ http.injectAfter(function(rsp){
 
 请求的params为FormData类型时，request的body不会进行自动转换
 
-## httpError 
+## HttpError
 
 ### 构造函数
 
@@ -116,7 +116,7 @@ httpError实例的构造函数为 vFetch.HttpError
 }
 ```
 
-## 示例
+## 整体示例
 
 ```html
 <!DOCTYPE html>
@@ -141,14 +141,21 @@ httpError实例的构造函数为 vFetch.HttpError
         httpStatus: null,
       })
     })
+
     http.injectAfter(function(){
       console.log(222);
     })
-    http.setErrorHook(function(e){
+
+    http.setErrorHook(async function(e){
       console.log(e, 'error');
+      const timeoutPromise = new Promise(resolve => setTimeout(() => {
+        resolve('async hook')
+      }, 1000))
+      const data = await timeoutPromise
+      console.log(data)
     })
 
-    http.get('t.json', {a:2, c:3})
+    http.get('t.json', {a:2, c:3}, { baseUrl, headers, timeout, ... })
       .then(rst => {
         //console.log(rst, 'success');
       }).catch(e => {
