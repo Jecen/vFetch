@@ -27,7 +27,6 @@ declare module 'VFetch' {
   }
 
   interface IVFetch {
-    HttpError: any;
 
     get?(url: String, params: any, opt: any): Promise<any>;
     post?(url: String, params: any, opt: any): Promise<any>;

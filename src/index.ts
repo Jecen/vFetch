@@ -12,7 +12,6 @@ const VFetch = (option: Options, instance: any): IVFetch => {
     injectBefore: clientWrapper.injectBefore.bind(clientWrapper),
     setErrorHook: clientWrapper.setError.bind(clientWrapper),
     setOption: clientWrapper.setOption.bind(clientWrapper),
-    HttpError,
   }
 
   allow.forEach((m: string) => {
@@ -21,5 +20,7 @@ const VFetch = (option: Options, instance: any): IVFetch => {
 
   return client
 }
+
+VFetch.HttpError = HttpError
 
 module.exports = VFetch
