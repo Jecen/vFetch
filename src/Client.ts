@@ -54,13 +54,14 @@ class Client implements IClient {
    * @param opt 针对该请求的请求参数
    */
   private _initUrl(url: String, opt: SendOptions = {}) {
+    const { baseUrl = '/' } = this.config
     const urlType = url.indexOf('://') !== -1 ? 'FULL' : 'PATH'
-    let base = this.config.baseUrl || ''
+    let base = baseUrl === '/' ? '' : baseUrl
     if (urlType === 'FULL') {
       return url
-    } else if (opt && opt.baseUrl) {
+    } else if (opt.baseUrl) {
       const { baseUrl } = opt
-      base = baseUrl
+      base = baseUrl === '/' ? '' : baseUrl
     }
     return `${base}${url}`
   }
