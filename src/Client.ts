@@ -122,7 +122,7 @@ class Client implements IClient {
         const hook: any = this.afterHooks[cursor]
         const hookRst = hook(response, done) 
         const hookReturns = isPromise(hookRst) ? await hookRst : hookRst
-        if (hookReturns instanceof HttpError) {
+        if (hookReturns instanceof Error) {
           throw hookRst
         } else {
           cursor += 1
@@ -160,7 +160,6 @@ class Client implements IClient {
     }
 
     if(finalOpt.customType === 'DOWNLOAD') { // 下载不用走 后置的钩子函数
-      console.log(finalOpt)
       if (finalOpt.immediately && window) {
         const a = window.document.createElement('a')
         const downUrl = window.URL.createObjectURL(response)// 获取 blob 本地文件连接 (blob 为纯二进制对象，不能够直接保存到磁盘上)
@@ -178,6 +177,7 @@ class Client implements IClient {
       try {
         await this._afterHookGenerator(response)
       } catch (error) {
+        console.log('catch after hook error')
         this.errorHook && this.errorHook(error, finalUrl, finalOpt)
         return
       }

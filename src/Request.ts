@@ -109,12 +109,13 @@ export default class Request {
    * @param rsp Response
    */
   private _checkResponse(rsp: Response) { // eslint-disable-line
-    const [rspContentType] = rsp.headers.get('Content-Type').split(';')
+    const { status, headers } = rsp
+    const [rspContentType] = headers.get('Content-Type').split(';')
     const AcceptType = this.opt.headers.Accept || '*/*'
     const isAllAllow = AcceptType.indexOf('*/*') > -1
-    if (AcceptType.indexOf(rspContentType) > -1 || isAllAllow) { // 返回值类型在期望接收类型范围内
-      return rsp
-    } else {
+
+    // 对 accept 做校验
+    if (AcceptType.indexOf(rspContentType) === -1 && !isAllAllow) { // 返回值类型在期望接收类型范围内
       const error = new HttpError({
         message: `响应数据类型与预期不符。[accept:${AcceptType};response-content-type:${rspContentType}]`,
         code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
@@ -122,11 +123,20 @@ export default class Request {
       })
       throw error
     }
+    // 对 status 做校验
+    if(status !== 200) {
+      const error = new HttpError({
+        message: '请求异常,请检查网络并核实接口。',
+        code: status,
+        httpStatus: status,
+      })
+      throw error
+    }
   }
 
   private async _fetch(http: any, url: any, opt: any) {
     try {
-      return await http(url, opt) //this.http(url, opt)
+      return await http(url, opt)
     } catch (e) {
       const error = new HttpError({
         message: HttpError.HTTP_ERROR_MAP[HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED],
@@ -186,8 +196,8 @@ export default class Request {
     const rsp = await this.timeoutWrapper(this._fetch(http, this.url, fetchOptions), timeout)
 
     this.response = rsp.clone()
-    const temp = this._checkResponse(rsp)
-    const rst = this._parseResponse(temp)
+    this._checkResponse(rsp)
+    const rst = this._parseResponse(rsp)
     return rst
   }
 
