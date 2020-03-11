@@ -91,10 +91,11 @@ class Client implements IClient {
       (typeof hook === 'object' || typeof hook === 'function') && typeof hook.then === 'function'
     let cursor = 0
     const max = this.beforeHooks.length
+    const done = () => cursor = max
     const loop = async () => {
       if (cursor < max) {
         const hook: any = this.beforeHooks[cursor]
-        const intermediate = hook({url: finalUrl, opt: finalOpt})
+        const intermediate = hook({url: finalUrl, opt: finalOpt}, done)
         
         if (intermediate) {
           const {url: cUrl = finalUrl, opt: cOpt = finalOpt} = isPromise(intermediate) ? await intermediate : intermediate
@@ -115,11 +116,11 @@ class Client implements IClient {
       (typeof hook === 'object' || typeof hook === 'function') && typeof hook.then === 'function'
     let cursor = 0
     const max = this.afterHooks.length
-    
+    const done = () => cursor = max
     const loop = async () => {
       if (cursor < max) {
         const hook: any = this.afterHooks[cursor]
-        const hookRst = hook(response) 
+        const hookRst = hook(response, done) 
         const hookReturns = isPromise(hookRst) ? await hookRst : hookRst
         if (hookReturns instanceof HttpError) {
           throw hookRst
@@ -153,6 +154,7 @@ class Client implements IClient {
     try {
       response = await request.send(http)
     } catch (error) {
+      console.log(error, '')
       this.errorHook && this.errorHook(error, finalUrl, finalOpt)
     }
 
