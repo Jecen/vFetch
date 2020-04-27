@@ -54,13 +54,14 @@ export default class Request {
         this.opt.body = Object.keys(params)
           .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
           .join('&')
-      } else if (contentType.indexOf('multipart/form-data') > -1 || !contentType) {
+      } else if (contentType.indexOf('multipart/form-data') > -1 || !contentType || method === 'UPLOAD') {
         this.opt.body = this._getFormData(params)
       }
     } else if (method === 'UPLOAD') {
       this.opt.method = 'POST'
       this.opt.customType = 'UPLOAD'
-      this.opt.headers['Content-Type'] = undefined
+      this.opt.headers['Content-Type'] = ''
+      this.opt.body = this._getFormData(params)
       delete this.opt.headers['Content-Type']
     } else if (method === 'DOWNLOAD') {
       this.opt.method = 'GET'
@@ -73,7 +74,7 @@ export default class Request {
    * @param params 请求参数
    */
   private _getFormData(params: any): any {
-    const formData = (typeof module !== 'undefined' && module.exports) ? new NodeFormData() : new FormData()
+    const formData = (typeof window === 'undefined') ? new NodeFormData() : new FormData()
     const entries = Object.entries(params)
     entries.length > 0 && entries.forEach((q: any) => {
       const [key, val] = q
@@ -192,7 +193,6 @@ export default class Request {
     if (body === "{}") {
       delete fetchOptions['body']
     }
-
     const rsp = await this.timeoutWrapper(this._fetch(http, this.url, fetchOptions), timeout)
 
     this.response = rsp.clone()

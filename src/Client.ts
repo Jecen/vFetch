@@ -177,7 +177,6 @@ class Client implements IClient {
       try {
         await this._afterHookGenerator(response)
       } catch (error) {
-        console.log('catch after hook error')
         this.errorHook && this.errorHook(error, finalUrl, finalOpt)
         return
       }
