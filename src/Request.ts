@@ -18,6 +18,20 @@ export default class Request {
   }
 
   /**
+   * 验证传递的参数是否为有效参数
+   * @param value 值
+   */
+  private _isEffectiveParams(value: any) {
+    if (value === 0 || value === '') { // 传值为 0 或者 空字符串则认为是有效字段
+      return true
+    } else if(value && value !== null && value !== undefined && value !== NaN) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  /**
    * 处理请求地址的方法
    */
   private _handlerUrl() {
@@ -51,9 +65,7 @@ export default class Request {
       if (contentType.indexOf('application/json') > -1) {
         this.opt.body = typeof params === 'string' ? params : JSON.stringify(params)
       } else if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
-        this.opt.body = Object.keys(params)
-          .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-          .join('&')
+        this.opt.body = this._getQueryData(params)
       } else if (contentType.indexOf('multipart/form-data') > -1 || !contentType || method === 'UPLOAD') {
         this.opt.body = this._getFormData(params)
       }
@@ -78,7 +90,7 @@ export default class Request {
     const entries = Object.entries(params)
     entries.length > 0 && entries.forEach((q: any) => {
       const [key, val] = q
-      if (val && val !== null && val !== undefined && val !== NaN) {
+      if (this._isEffectiveParams(val)) {
         formData.append(key, val)
       }
     })
@@ -98,8 +110,8 @@ export default class Request {
     const entries = Object.entries(params)
     entries.length > 0 && entries.forEach((q: any) => {
       const [key, val] = q
-      if (val && val !== null && val !== undefined && val !== NaN) {
-        queryList.push(`${key}=${encodeURIComponent(val)}`)
+      if (this._isEffectiveParams(val)) {
+        queryList.push(`${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
       }
     })
     return queryList.join('&')
