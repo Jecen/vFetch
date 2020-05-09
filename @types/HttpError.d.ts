@@ -18,6 +18,7 @@ declare module 'HttpError' {
     readonly message: string;
     readonly code: number|string;
     readonly httpStatus: number|string;
+    readonly response?: Response;
     readonly nativeError?: Error;
   }
 
@@ -26,6 +27,7 @@ declare module 'HttpError' {
     readonly message: string;
     readonly code: number|string;
     readonly nativeError?: Error;
+    readonly response: Response;
   }
 
 }

@@ -6,6 +6,7 @@ class HttpError extends Error implements IHttpError {
   public message: string;
   public code: number|string;
   public nativeError?: Error;
+  public response: Response = null;
 
   public static ERROR_CODE = {
     HTTP_STATUS_ERROR: 'HTTP_STATUS_ERROR',
@@ -28,9 +29,11 @@ class HttpError extends Error implements IHttpError {
       code,
       httpStatus = 200,
       nativeError,
+      response,
     } = errorInfo
     this.httpStatus = httpStatus
     this.message = message
+    this.response = response || null
     this.code = code
     this.nativeError = nativeError
   }

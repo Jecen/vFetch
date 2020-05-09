@@ -140,8 +140,9 @@ export default class Request {
     if(status !== 200) {
       const error = new HttpError({
         message: '请求异常,请检查网络并核实接口。',
-        code: status,
+        code: HttpError.ERROR_CODE.HTTP_STATUS_ERROR,
         httpStatus: status,
+        response: rsp.clone(),
       })
       throw error
     }

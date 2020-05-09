@@ -140,49 +140,48 @@ class Client implements IClient {
     let finalUrl = initUrl
     let finalOpt = initOpt
     try {
-      if (!skipBefore) { // 跳过前置钩子
-        const { url: tempUrl = initUrl, opt: tempOpt = initOpt} = await this._beforeHookGenerator(initUrl, initOpt)
-        finalUrl = tempUrl
-        finalOpt = tempOpt
-      } 
-    } catch (error) { // 前置钩子可能出现的报错
-      this.errorHook && this.errorHook(new HttpError(error), finalUrl, finalOpt)
-      return
-    }
-
-    const request = new Request({url: finalUrl, opt: finalOpt})
-    let response = null
-    try {
-      response = await request.send(http)
-    } catch (error) {
-      this.errorHook && this.errorHook(error, finalUrl, finalOpt)
-      return
-    }
-
-    if(finalOpt.customType === 'DOWNLOAD') { // 下载不用走 后置的钩子函数
-      if (finalOpt.immediately && window) {
-        const a = window.document.createElement('a')
-        const downUrl = window.URL.createObjectURL(response)// 获取 blob 本地文件连接 (blob 为纯二进制对象，不能够直接保存到磁盘上)
-        const filename = finalOpt.filename.split('.') || request.response.headers.get('Content-Disposition').split('filename=')[1].split('.')
-        a.href = downUrl
-        a.download = `${decodeURI(filename[0])}.${filename[1]}`
-        a.click()
-        window.URL.revokeObjectURL(downUrl)
-        return this.wrapperFunc ? this.wrapperFunc('ok') : response
-      } else {
-        return this.wrapperFunc ? this.wrapperFunc(response) : response
-      }
-    }
-    if (!finalOpt.skipAfter) {
       try {
+        if (!skipBefore) { // 跳过前置钩子
+          const { url: tempUrl = initUrl, opt: tempOpt = initOpt} = await this._beforeHookGenerator(initUrl, initOpt)
+          finalUrl = tempUrl
+          finalOpt = tempOpt
+        } 
+      } catch (error) { // 前置钩子可能出现的报错
+        throw new HttpError(error)
+      }
+
+      const request = new Request({url: finalUrl, opt: finalOpt})
+      let response = await request.send(http)
+
+      if(finalOpt.customType === 'DOWNLOAD') { // 下载不用走 后置的钩子函数
+        if (finalOpt.immediately && window) {
+          const a = window.document.createElement('a')
+          const downUrl = window.URL.createObjectURL(response)// 获取 blob 本地文件连接 (blob 为纯二进制对象，不能够直接保存到磁盘上)
+          const filename = finalOpt.filename.split('.') || request.response.headers.get('Content-Disposition').split('filename=')[1].split('.')
+          a.href = downUrl
+          a.download = `${decodeURI(filename[0])}.${filename[1]}`
+          a.click()
+          window.URL.revokeObjectURL(downUrl)
+          return this.wrapperFunc ? this.wrapperFunc('ok') : response
+        } else {
+          return this.wrapperFunc ? this.wrapperFunc(response) : response
+        }
+      }
+      if (!finalOpt.skipAfter) {
         await this._afterHookGenerator(response)
-      } catch (error) {
-        this.errorHook && this.errorHook(error, finalUrl, finalOpt)
-        return
+      }
+
+      return response
+    } catch (error) {
+      if (this.errorHook) {
+        const handlerError = this.errorHook(error, finalUrl, finalOpt)
+        const finalError = typeof handlerError.then === 'function' ? await handlerError : handlerError
+        throw finalError || error
+      } else {
+        throw error
       }
     }
-
-    return response
+    
   }
 
   get(http: any, url: String, params: any, opt?: SendOptions) {
