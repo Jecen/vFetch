@@ -123,12 +123,12 @@ export default class Request {
    */
   private _checkResponse(rsp: Response) { // eslint-disable-line
     const { status, headers } = rsp
-    const [rspContentType] = headers.get('Content-Type').split(';')
+    const [rspContentType] = headers.get('Content-Type') ? headers.get('Content-Type').split(';') : ['json']
     const AcceptType = this.opt.headers.Accept || '*/*'
     const isAllAllow = AcceptType.indexOf('*/*') > -1
 
     // 对 accept 做校验
-    if (AcceptType.indexOf(rspContentType) === -1 && !isAllAllow) { // 返回值类型在期望接收类型范围内
+    if (!rspContentType || (AcceptType.indexOf(rspContentType) === -1 && !isAllAllow)) { // 返回值类型在期望接收类型范围内
       const error = new HttpError({
         message: `响应数据类型与预期不符。[accept:${AcceptType};response-content-type:${rspContentType}]`,
         code: HttpError.ERROR_CODE.RESPONSE_PARSING_FAILED,
@@ -168,7 +168,7 @@ export default class Request {
    */
   async _parseResponse(rsp: Response) {
     const { customType, immediately = false } = this.opt
-    const [rspContentType] = rsp.headers.get('Content-Type').split(';')
+    const [rspContentType] = rsp.headers.get('Content-Type') ? rsp.headers.get('Content-Type').split(';') : ['json'] 
     
     const parse = async (type: string) => {
       try {
