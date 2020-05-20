@@ -15,7 +15,11 @@ const VFetch = (option: Options, instance: any): IVFetch => {
   }
 
   allow.forEach((m: string) => {
-    client[m] = async (url: String, params: any, opt: RequestOptions) => clientWrapper[m](http, url, params, opt)
+    if (m === 'ossDownload') {
+      client[m] = async (url: string, fileName: string) => clientWrapper[m](http, url, fileName)
+    } else {
+      client[m] = async (url: string, params: any, opt: RequestOptions) => clientWrapper[m](http, url, params, opt)
+    }
   })
 
   return client

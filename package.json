@@ -1,6 +1,6 @@
 {
   "name": "@ourea/fetch",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "easy to use fetch lib",
   "main": "dist/fetch.node.js",
   "types": "@types/index.d.ts",
