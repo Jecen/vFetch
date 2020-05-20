@@ -6,15 +6,15 @@ declare module 'VFetch' {
   }
   
   interface FetchConfig {
-    credentials?: String;
+    credentials?: string;
     headers?: Headers;
     body?: any;
-    method?: String;
+    method?: string;
   }
 
   interface ClientConfig extends FetchConfig {
-    timeout?: Number;
-    baseUrl?: String;
+    timeout?: number;
+    baseUrl?: string;
   }
 
   interface Options {
@@ -28,12 +28,12 @@ declare module 'VFetch' {
 
   interface IVFetch {
 
-    get?(url: String, params: any, opt: any): Promise<any>;
-    post?(url: String, params: any, opt: any): Promise<any>;
-    put?(url: String, params: any, opt: any): Promise<any>;
-    delete?(url: String, params: any, opt: any): Promise<any>;
-    download?(url: String, params: any, opt: any): Promise<any>;
-    upload?(url: String, params: any, opt: any): Promise<any>;
+    get?(url: string, params: any, opt: any): Promise<any>;
+    post?(url: string, params: any, opt: any): Promise<any>;
+    put?(url: string, params: any, opt: any): Promise<any>;
+    delete?(url: string, params: any, opt: any): Promise<any>;
+    download?(url: string, params: any, opt: any): Promise<any>;
+    upload?(url: string, params: any, opt: any): Promise<any>;
 
     setOption(option: Options): void;
     injectAfter(after: Function| Promise<any>): void;
@@ -43,33 +43,33 @@ declare module 'VFetch' {
 
   interface SendOptions extends FetchConfig {
     baseUrl?: string;
-    timeout?: Number;
-    immediately?: Boolean;
-    filename?: String;
-    skipBefore?: Boolean;
-    skipAfter?: Boolean;
+    timeout?: number;
+    immediately?: boolean;
+    filename?: string;
+    skipBefore?: boolean;
+    skipAfter?: boolean;
   }
 
   interface RequestOptions extends SendOptions{
-    method: String;
+    method: string;
     params: any;
     headers: Headers;
     body: any;
-    customType?: String;
+    customType?: string;
   }
 
   interface BeforeHookResult {
-    url: String;
+    url: string;
     opt: RequestOptions;
   }
 
   interface IClient {
-    get(url: String, params: any, opt: any): Promise<any>;
-    post(url: String, params: any, opt: any): Promise<any>;
-    put(url: String, params: any, opt: any): Promise<any>;
-    delete(url: String, params: any, opt: any): Promise<any>;
-    download(url: String, params: any, opt: any): Promise<any>;
-    upload(url: String, params: any, opt: any): Promise<any>;
+    get(url: string, params: any, opt: any): Promise<any>;
+    post(url: string, params: any, opt: any): Promise<any>;
+    put(url: string, params: any, opt: any): Promise<any>;
+    delete(url: string, params: any, opt: any): Promise<any>;
+    download(url: string, params: any, opt: any): Promise<any>;
+    upload(url: string, params: any, opt: any): Promise<any>;
 
     setOption(option: Options): void;
     injectAfter(after: Function| Promise<any>): void;
@@ -78,9 +78,9 @@ declare module 'VFetch' {
   }
 
   interface IRequest {
-    url: String;
+    url: string;
     opt: RequestOptions;
-    isOver: Boolean;
+    isOver: boolean;
     http: any;
     response: Response;
 

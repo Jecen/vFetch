@@ -53,7 +53,7 @@ class Client implements IClient {
    * @param url 请求路径
    * @param opt 针对该请求的请求参数
    */
-  private _initUrl(url: String, opt: SendOptions = {}) {
+  private _initUrl(url: string, opt: SendOptions = {}) {
     const { baseUrl = '/' } = this.config
     const urlType = url.indexOf('://') !== -1 ? 'FULL' : 'PATH'
     let base = baseUrl === '/' ? '' : baseUrl
@@ -72,7 +72,7 @@ class Client implements IClient {
    * @param params 请求参数
    * @param opt 请求配置
    */
-  private _initOpt(method: String, params: any, opt: SendOptions = {}): RequestOptions {
+  private _initOpt(method: string, params: any, opt: SendOptions = {}): RequestOptions {
     const headers = Object.assign({}, this.config.headers, opt.headers || {})
     const finalOpt = Object.assign({}, this.config, opt, { method, params, headers }) 
     return finalOpt
@@ -84,7 +84,7 @@ class Client implements IClient {
    * @param url 请求地址
    * @param opt 请求配置
    */
-  private async _beforeHookGenerator(url: String, opt: RequestOptions): Promise<BeforeHookResult | null | undefined> {
+  private async _beforeHookGenerator(url: string, opt: RequestOptions): Promise<BeforeHookResult | null | undefined> {
     let finalUrl = url
     let finalOpt = opt
     const isPromise = (hook: any) => 
@@ -133,7 +133,7 @@ class Client implements IClient {
     await loop()
   }
 
-  private async _sendRequest(http: any, url: String, method = 'GET', params = {}, opt: SendOptions = {}) {
+  private async _sendRequest(http: any, url: string, method = 'GET', params = {}, opt: SendOptions = {}) {
     const { skipBefore = false } = opt
     const initUrl = this._initUrl(url, opt)
     const initOpt = this._initOpt(method, params, opt) // 与全局配置 merge
@@ -184,28 +184,43 @@ class Client implements IClient {
     
   }
 
-  get(http: any, url: String, params: any, opt?: SendOptions) {
+  get(http: any, url: string, params: any, opt?: SendOptions) {
     return this._sendRequest(http, url, 'GET', params, opt)
   }
 
-  post(http: any, url: String, params: any, opt?: SendOptions) {
+  post(http: any, url: string, params: any, opt?: SendOptions) {
     return this._sendRequest(http, url, 'POST', params, opt)
   }
 
-  put(http: any, url: String, params: any, opt?: SendOptions) {
+  put(http: any, url: string, params: any, opt?: SendOptions) {
     return this._sendRequest(http, url, 'PUT', params, opt)
   }
 
-  delete(http: any, url: String, params: any, opt?: SendOptions) {
+  delete(http: any, url: string, params: any, opt?: SendOptions) {
     return this._sendRequest(http, url, 'DELETE', params, opt)
   }
 
-  upload(http: any, url: String, params: any, opt?: SendOptions) {
+  upload(http: any, url: string, params: any, opt?: SendOptions) {
     return this._sendRequest(http, url, 'UPLOAD', params, opt)
   }
 
-  download(http: any, url: String, params: any, opt?: SendOptions) {
+  download(http: any, url: string, params: any, opt?: SendOptions) {
     return this._sendRequest(http, url, 'DOWNLOAD', params, opt)
+  }
+
+  async ossDownload(http: any, url: string, fileName: string) {
+    if (!window) {
+      throw new Error('无window对象。')
+    }
+
+    const rst = await http(url)
+    const data = await rst.blob()
+    const a = window.document.createElement('a')
+    const downUrl = window.URL.createObjectURL(data)// 获取 blob 本地文件连接 (blob 为纯二进制对象，不能够直接保存到磁盘上)
+    a.href = downUrl
+    a.download = fileName
+    a.click()
+    window.URL.revokeObjectURL(downUrl)
   }
 
   setOption(option: Options) {

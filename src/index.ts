@@ -5,7 +5,7 @@ import Client from './Client'
 
 const VFetch = (option: Options, instance: any): IVFetch => {
   const http = instance || window.fetch || fetch
-  const { allow = ['get', 'post', 'put', 'delete', 'download', 'upload'] } = option
+  const { allow = ['get', 'post', 'put', 'delete', 'download', 'upload', 'ossDownload'] } = option
   const clientWrapper = new Client(option)
   const client = {
     injectAfter: clientWrapper.injectAfter.bind(clientWrapper),
