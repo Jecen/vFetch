@@ -78,6 +78,7 @@ export default class Request {
     } else if (method === 'DOWNLOAD') {
       this.opt.method = 'GET'
       this.opt.customType = 'DOWNLOAD'
+      this.opt.body = this._getQueryData(params)
     }
   }
 
