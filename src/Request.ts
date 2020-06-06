@@ -36,7 +36,7 @@ export default class Request {
    */
   private _handlerUrl() {
     const { method, params } = this.opt
-    const isSoftMethod = method === 'GET' || method === 'DELETE'
+    const isSoftMethod = method === 'GET' || method === 'DELETE' || method === 'DOWNLOAD'
     if (isSoftMethod && params) {
       this.opt.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
       const queryString = this._getQueryData(params)
@@ -51,7 +51,7 @@ export default class Request {
    */
   private _handlerOpt() {
     const { method, params } = this.opt
-    const isSoftMethod = method === 'GET' || method === 'DELETE'
+    const isSoftMethod = method === 'GET' || method === 'DELETE' || method === 'DOWNLOAD'
     const isCustomMethod = method === 'UPLOAD' || method === 'DOWNLOAD'
 
     // 参数已经构建为 form-data 格式则直接存在 finalOpt 的 body 中
@@ -61,12 +61,14 @@ export default class Request {
     }
 
     if (!isSoftMethod && !isCustomMethod && params) {
-      const contentType = this.opt.headers['Content-Type'] || ''
+      const contentType = this.opt.headers['Content-Type'] || 'application/json'
       if (contentType.indexOf('application/json') > -1) {
         this.opt.body = typeof params === 'string' ? params : JSON.stringify(params)
-      } else if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
+      } else if (contentType.indexOf('application/x-www-form-urlencoded') > -1) { // 此处已经没有必要存在
         this.opt.body = this._getQueryData(params)
-      } else if (contentType.indexOf('multipart/form-data') > -1 || !contentType || method === 'UPLOAD') {
+      } else if (contentType.indexOf('multipart/form-data') > -1 || !contentType) {
+        this.opt.body = this._getFormData(params)
+      } else { // 默认是 formData 形式
         this.opt.body = this._getFormData(params)
       }
     } else if (method === 'UPLOAD') {
@@ -78,7 +80,7 @@ export default class Request {
     } else if (method === 'DOWNLOAD') {
       this.opt.method = 'GET'
       this.opt.customType = 'DOWNLOAD'
-      this.opt.body = this._getQueryData(params)
+      // DOWNLOAD 的参数直接拼接在url后
     }
   }
 
