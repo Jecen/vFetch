@@ -157,7 +157,7 @@ class Client implements IClient {
         if (finalOpt.immediately && window) {
           const a = window.document.createElement('a')
           const downUrl = window.URL.createObjectURL(response)// 获取 blob 本地文件连接 (blob 为纯二进制对象，不能够直接保存到磁盘上)
-          const filename = finalOpt.filename.split('.') || request.response.headers.get('Content-Disposition').split('filename=')[1].split('.')
+          const filename = finalOpt.filename ? finalOpt.filename.split('.') : request.response.headers.get('Content-Disposition').split('filename=')[1].split('.')
           a.href = downUrl
           a.download = `${decodeURI(filename[0])}.${filename[1]}`
           a.click()
